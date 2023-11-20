@@ -181,6 +181,19 @@ class Client {
         );
   }
 
+  Future<Response<ResponseBody>> readStream(
+    String path, {
+    void Function(int count, int total)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    return await this.c.wdReadWithStreamOrigin(
+          this,
+          path,
+          onProgress: onProgress,
+          cancelToken: cancelToken,
+        );
+  }
+
   /// Write the bytes to remote path
   Future<void> write(
     String path,

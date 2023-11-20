@@ -285,7 +285,10 @@ class WdDio with DioMixin implements Dio {
         self,
         'GET',
         path,
-        optionsHandler: (options) => options.responseType = ResponseType.stream,
+        optionsHandler: (options) {
+          options.followRedirects = true;
+          options.responseType = ResponseType.stream;
+        },
         // onReceiveProgress: onProgress,
         cancelToken: cancelToken,
       );
@@ -426,6 +429,52 @@ class WdDio with DioMixin implements Dio {
       });
     }
     await DioMixin.listenCancelForAsyncTask(cancelToken, future);
+  }
+
+  /// read a file with stream
+  Future<Response<ResponseBody>> wdReadWithStreamOrigin(
+    Client self,
+    String path, {
+    void Function(int count, int total)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    // fix auth error
+    var pResp = await this.wdOptions(self, path, cancelToken: cancelToken);
+    if (pResp.statusCode != 200) {
+      throw newResponseError(pResp);
+    }
+
+    Response<ResponseBody> resp;
+
+    // Reference Dio download
+    // request
+    try {
+      resp = await this.req(
+        self,
+        'GET',
+        path,
+        optionsHandler: (options) {
+          options.followRedirects = true;
+          options.responseType = ResponseType.stream;
+        },
+        onReceiveProgress: onProgress,
+        cancelToken: cancelToken,
+      );
+      return resp;
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.badResponse) {
+        if (e.response!.requestOptions.receiveDataWhenStatusError == true) {
+          var res = await transformer.transformResponse(
+            e.response!.requestOptions..responseType = ResponseType.json,
+            e.response!.data as ResponseBody,
+          );
+          e.response!.data = res;
+        } else {
+          e.response!.data = null;
+        }
+      }
+      rethrow;
+    }
   }
 
   /// write a file with bytes
