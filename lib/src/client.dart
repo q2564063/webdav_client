@@ -169,6 +169,7 @@ class Client {
   Future<void> read2File(
     String path,
     String savePath, {
+    int? downloadSizeLimit,
     void Function(int count, int total)? onProgress,
     CancelToken? cancelToken,
   }) async {
@@ -176,6 +177,7 @@ class Client {
           this,
           path,
           savePath,
+          downloadSizeLimit: downloadSizeLimit,
           onProgress: onProgress,
           cancelToken: cancelToken,
         );
@@ -189,7 +191,6 @@ class Client {
     return await this.c.wdReadWithStreamOrigin(
           this,
           path,
-          onProgress: onProgress,
           cancelToken: cancelToken,
         );
   }

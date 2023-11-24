@@ -267,6 +267,7 @@ class WdDio with DioMixin implements Dio {
     Client self,
     String path,
     String savePath, {
+    int? downloadSizeLimit,
     void Function(int count, int total)? onProgress,
     CancelToken? cancelToken,
   }) async {
@@ -354,7 +355,7 @@ class WdDio with DioMixin implements Dio {
       (data) {
         subscription.pause();
         // Write file asynchronously
-        asyncWrite = raf.writeFrom(data).then((_raf) {
+        asyncWrite = raf.writeFrom(data).then((_raf) async {
           // Notify progress
           received += data.length;
 
@@ -363,6 +364,20 @@ class WdDio with DioMixin implements Dio {
           raf = _raf;
           if (cancelToken == null || !cancelToken.isCancelled) {
             subscription.resume();
+          }
+          //限制下载大小，下载部分文件，从中获取歌曲的元数据
+          if (downloadSizeLimit != null && received > downloadSizeLimit) {
+            try {
+              await subscription.cancel();
+              closed = true;
+              await raf.close();
+              completer.complete(resp);
+            } catch (err) {
+              completer.completeError(DioError(
+                requestOptions: resp.requestOptions,
+                error: err,
+              ));
+            }
           }
         }).catchError((err) async {
           try {
@@ -435,7 +450,6 @@ class WdDio with DioMixin implements Dio {
   Future<Response<ResponseBody>> wdReadWithStreamOrigin(
     Client self,
     String path, {
-    void Function(int count, int total)? onProgress,
     CancelToken? cancelToken,
   }) async {
     // fix auth error
@@ -457,7 +471,6 @@ class WdDio with DioMixin implements Dio {
           options.followRedirects = true;
           options.responseType = ResponseType.stream;
         },
-        onReceiveProgress: onProgress,
         cancelToken: cancelToken,
       );
       return resp;
