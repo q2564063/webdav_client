@@ -185,11 +185,13 @@ class Client {
 
   Future<Response<ResponseBody>> readStream(
     String path, {
+    Map<String, String>? headers,
     CancelToken? cancelToken,
   }) async {
     return await this.c.wdReadWithStreamOrigin(
           this,
           path,
+          headers: headers,
           cancelToken: cancelToken,
         );
   }

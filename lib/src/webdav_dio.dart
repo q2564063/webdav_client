@@ -55,6 +55,7 @@ class WdDio with DioMixin implements Dio {
     Client self,
     String method,
     String path, {
+    Map<String, String>? headers,
     dynamic data,
     Function(Options)? optionsHandler,
     ProgressCallback? onSendProgress,
@@ -70,6 +71,10 @@ class WdDio with DioMixin implements Dio {
     // 二次处理options
     if (optionsHandler != null) {
       optionsHandler(options);
+    }
+
+    if (headers != null) {
+      options.headers!.addAll(headers);
     }
 
     // authorization
@@ -450,6 +455,7 @@ class WdDio with DioMixin implements Dio {
   Future<Response<ResponseBody>> wdReadWithStreamOrigin(
     Client self,
     String path, {
+    Map<String, String>? headers,
     CancelToken? cancelToken,
   }) async {
     // fix auth error
@@ -467,6 +473,7 @@ class WdDio with DioMixin implements Dio {
         self,
         'GET',
         path,
+        headers: headers,
         optionsHandler: (options) {
           options.followRedirects = true;
           options.responseType = ResponseType.stream;
