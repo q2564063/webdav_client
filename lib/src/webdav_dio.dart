@@ -291,10 +291,7 @@ class WdDio with DioMixin implements Dio {
         self,
         'GET',
         path,
-        optionsHandler: (options) {
-          options.followRedirects = true;
-          options.responseType = ResponseType.stream;
-        },
+        optionsHandler: (options) => options.responseType = ResponseType.stream,
         // onReceiveProgress: onProgress,
         cancelToken: cancelToken,
       );
