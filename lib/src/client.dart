@@ -169,6 +169,7 @@ class Client {
   Future<void> read2File(
     String path,
     String savePath, {
+    Map<String, String>? headers,
     int? downloadSizeLimit,
     void Function(int count, int total)? onProgress,
     CancelToken? cancelToken,
@@ -177,6 +178,7 @@ class Client {
           this,
           path,
           savePath,
+          headers: headers,
           downloadSizeLimit: downloadSizeLimit,
           onProgress: onProgress,
           cancelToken: cancelToken,

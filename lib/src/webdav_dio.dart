@@ -131,6 +131,7 @@ class WdDio with DioMixin implements Dio {
         self,
         method,
         path,
+        headers: headers,
         data: data,
         optionsHandler: optionsHandler,
         onSendProgress: onSendProgress,
@@ -272,6 +273,7 @@ class WdDio with DioMixin implements Dio {
     Client self,
     String path,
     String savePath, {
+    Map<String, String>? headers,
     int? downloadSizeLimit,
     void Function(int count, int total)? onProgress,
     CancelToken? cancelToken,
@@ -291,6 +293,7 @@ class WdDio with DioMixin implements Dio {
         self,
         'GET',
         path,
+        headers: headers,
         optionsHandler: (options) => options.responseType = ResponseType.stream,
         // onReceiveProgress: onProgress,
         cancelToken: cancelToken,
