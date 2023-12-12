@@ -294,7 +294,11 @@ class WdDio with DioMixin implements Dio {
         'GET',
         path,
         headers: headers,
-        optionsHandler: (options) => options.responseType = ResponseType.stream,
+        // optionsHandler: (options) => options.responseType = ResponseType.stream,
+        optionsHandler: (options) {
+          options.responseType = ResponseType.stream;
+          options.followRedirects = true;
+        },
         // onReceiveProgress: onProgress,
         cancelToken: cancelToken,
       );
@@ -474,7 +478,10 @@ class WdDio with DioMixin implements Dio {
         'GET',
         path,
         headers: headers,
-        optionsHandler: (options) => options.responseType = ResponseType.stream,
+        optionsHandler: (options) {
+          options.responseType = ResponseType.stream;
+          options.followRedirects = true;
+        },
         cancelToken: cancelToken,
       );
       return resp;
